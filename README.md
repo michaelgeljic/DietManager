@@ -3,7 +3,7 @@
 - [ ] Kristina Marasovic 
 - [x] Michael Geljic
 - [x] Helena Markulin
-- [ ] ...
+- [x] Zarko Zizic
 - [x] Luka Boban
 - [ ] ...
 
