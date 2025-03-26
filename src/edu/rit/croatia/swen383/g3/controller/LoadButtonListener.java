@@ -33,7 +33,7 @@ public class LoadButtonListener implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        List<Food> loadedFoods = controller.getFileHandler().readFoods("./src/data/foods.csv");
+        List<Food> loadedFoods = controller.getFileHandler().readFoods("./src/edu/rit/croatia/swen383/g3/data/foods.csv");
         for (Food food : loadedFoods) {
             controller.getFoods().addFood(food);
         }

@@ -32,7 +32,7 @@ public class AddFoodButtonListener implements ActionListener {
         if (newFood == null) return;
 
         controller.getFoods().addFood(newFood);
-        controller.getFileHandler().writeFoods(controller.getFoods().getAllFoods(), "./src/data/foods.csv");
+        controller.getFileHandler().writeFoods(controller.getFoods().getAllFoods(), "./src/edu/rit/croatia/swen383/g3/data/foods.csv");
 
         List<String> foodNames = controller.getFoods().getAllFoods().stream()
                 .map(Food::getName)
