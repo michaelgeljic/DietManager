@@ -1,7 +1,7 @@
-# DietManager800G0 - Group Members
+# DietManager800G3 - Group Members
 
 - [ ] Kristina Marasovic 
-- [ ] Ivo Ivic
+- [x] Michael Geljic
 - [ ] ...
 - [ ] ...
 - [ ] ...
