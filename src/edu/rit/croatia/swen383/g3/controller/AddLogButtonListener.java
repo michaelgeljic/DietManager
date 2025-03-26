@@ -61,7 +61,7 @@ public class AddLogButtonListener implements ActionListener {
 
             controller.getView().updateLogList(sb.toString());
             controller.getView().updateCalories(controller.getLogs().getTotalCaloriesForDate(LocalDate.now()));
-            controller.getFileHandler().writeLogs(controller.getLogs().getAllLogs(), "./src/data/log.csv");
+            controller.getFileHandler().writeLogs(controller.getLogs().getAllLogs(), "./src/edu/rit/croatia/swen383/g3/data/log.csv");
 
         } catch (NumberFormatException ex) {
             controller.getView().showMessage("Invalid servings amount.");
