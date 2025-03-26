@@ -22,7 +22,6 @@ public class AddFoodButtonListener implements ActionListener {
         this.controller = controller;}
 
     /**
-
      Called when the "Add New Food" button is clicked.
      It shows a popup for food input, creates and saves a new food object,
      updates the CSV file, and refreshes the food list in the view.*
