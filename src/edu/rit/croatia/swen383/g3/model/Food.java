@@ -1,85 +1,50 @@
 package edu.rit.croatia.swen383.g3.model;
 
 /**
- * Represents a basic food item with its nutritional values.
- * Each food has a name, calories, fat, carbs, and protein per serving.
+ * Abstract base class represening a food item
+ * this class is a part of the composite design pattern
+ * Both basic foods nd composite recipes extend this class and provide
+ * nutritional information
  */
-public class Food {
-    private String name;
-    private double calories;
-    private double fat;
-    private double carbs;
-    private double protein;
+public abstract class Food {
+    /**
+     * Gets the name of the food
+     * @return the name of the food item
+     */
+    public abstract String getName();
 
     /**
-     * Constructs a new Food object with the specified name and nutritional values.
-     *
-     * @param name     the name of the food
-     * @param calories the number of calories per serving
-     * @param fat      the amount of fat (in grams) per serving
-     * @param carbs    the amount of carbohydrates (in grams) per serving
-     * @param protein  the amount of protein (in grams) per serving
+     * gets the total calories for the food.
+     * @return the calorie count
      */
-    public Food(String name, double calories, double fat, double carbs, double protein) {
-        this.name = name;
-        this.calories = calories;
-        this.fat = fat;
-        this.carbs = carbs;
-        this.protein = protein;
-    }
+    public abstract double getCalories();
 
     /**
-     * Gets the name of the food.
-     *
-     * @return the food's name
+     * gets the total fat content of the food
+     * @return fat in grams
      */
-    public String getName() {
-        return name;
-    }
+    public abstract double getFat();
 
     /**
-     * Gets the number of calories in the food.
-     *
-     * @return the calories per serving
+     * gets the total carbohydrate content of the food
+     * @return carbs in grams
      */
-    public double getCalories() {
-        return calories;
-    }
+    public abstract double getCarbs();
 
     /**
-     * Gets the amount of fat in the food.
-     *
-     * @return the fat in grams per serving
+     * gets the total protein content of the food
+     * @return protein in grams
      */
-    public double getFat() {
-        return fat;
-    }
+    public abstract double getProtein();
 
     /**
-     * Gets the amount of carbohydrates in the food.
-     *
-     * @return the carbs in grams per serving
+     * 
+     * Adds a food item as a component of this food
+     * this method is overridden by composite classes (recipe)
+     * for basic foods, this operation is not supported
+     * @param food the food to add
      */
-    public double getCarbs() {
-        return carbs;
-    }
-
-    /**
-     * Gets the amount of protein in the food.
-     *
-     * @return the protein in grams per serving
-     */
-    public double getProtein() {
-        return protein;
-    }
-
-    /**
-     * Returns a string representation of the food with its name and calories.
-     *
-     * @return a summary string for the food
-     */
-    @Override
-    public String toString() {
-        return name + ": " + calories + " cal";
+    public void add(Food food) {
+        throw new UnsupportedOperationException("Cannot add to a basic food");
     }
 }
