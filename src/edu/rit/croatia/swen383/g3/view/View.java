@@ -1,23 +1,20 @@
 package edu.rit.croatia.swen383.g3.view;
 
-import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import model.*;
 
-import edu.rit.croatia.swen383.g3.model.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
 
 /**
- * The View class defines the GUI for the Diet Manager application.
- * It handles layout and user input, and provides methods for the controller to
- * update and interact with the GUI
+ * The View class handles all user interface components for the Diet Manager
+ * application.
+ * It uses Swing to display food options, logs, and allows user interaction
+ * through buttons and dialogs.
  */
 public class View extends JFrame {
-
     private JList<String> foodList;
     private DefaultListModel<String> foodListModel;
     private JTextArea logDisplayArea;
@@ -28,8 +25,7 @@ public class View extends JFrame {
     private JLabel weightLabel;
 
     /**
-     * Constructs the GUI layout including panels for food list, logs, and control
-     * buttons
+     * Constructs the GUI layout, initializes components and panels.
      */
     public View() {
         setTitle("Diet Manager");
@@ -37,6 +33,7 @@ public class View extends JFrame {
         setSize(700, 500);
         setLayout(new BorderLayout());
 
+        // Food list panel
         foodListModel = new DefaultListModel<>();
         foodList = new JList<>(foodListModel);
         JScrollPane foodScroll = new JScrollPane(foodList);
@@ -44,6 +41,7 @@ public class View extends JFrame {
         foodPanel.add(new JLabel("Available Foods (Click to Select)"), BorderLayout.NORTH);
         foodPanel.add(foodScroll, BorderLayout.CENTER);
 
+        // Log display panel
         logDisplayArea = new JTextArea(10, 30);
         logDisplayArea.setEditable(false);
         JScrollPane logScroll = new JScrollPane(logDisplayArea);
@@ -51,32 +49,41 @@ public class View extends JFrame {
         logPanel.add(new JLabel("Today's Log"), BorderLayout.NORTH);
         logPanel.add(logScroll, BorderLayout.CENTER);
 
+        // Buttons and info panel
         loadButton = new JButton("Load Data");
         addLogButton = new JButton("Add Log Entry");
-        addFoodButton = new JButton("Add New Food");
+        addFoodButton = new JButton("Add New Food/Recipe");
         calorieLabel = new JLabel("Total Calories: 0");
         weightLabel = new JLabel("Weight: 0.0 kg");
 
-        JPanel controPanel = new JPanel();
-        controPanel.add(loadButton);
-        controPanel.add(addLogButton);
-        controPanel.add(addFoodButton);
-        controPanel.add(calorieLabel);
-        controPanel.add(weightLabel);
+        JPanel controlPanel = new JPanel();
+        addButtons(controlPanel, loadButton, addLogButton, addFoodButton, calorieLabel, weightLabel);
 
+        // Main layout
         JPanel centerPanel = new JPanel(new GridLayout(1, 2));
         centerPanel.add(foodPanel);
         centerPanel.add(logPanel);
 
         add(centerPanel, BorderLayout.CENTER);
-        add(controPanel, BorderLayout.SOUTH);
-
+        add(controlPanel, BorderLayout.SOUTH);
     }
 
     /**
-     * Updates the food list display with the given list of food names.
+     * Adds multiple components to a panel using varargs.
      *
-     * @param foodNames the list of food names to display
+     * @param panel      the panel to add components to
+     * @param components variable number of components to add
+     */
+    private void addButtons(JPanel panel, JComponent... components) {
+        for (JComponent comp : components) {
+            panel.add(comp);
+        }
+    }
+
+    /**
+     * Updates the JList with a list of food names.
+     *
+     * @param foodNames list of foods to show in the food list
      */
     public void updateFoodList(List<String> foodNames) {
         foodListModel.clear();
@@ -85,8 +92,8 @@ public class View extends JFrame {
         }
     }
 
-     /**
-     * Returns the food name selected by the user in the list.
+    /**
+     * Returns the currently selected food name from the list.
      *
      * @return the selected food name, or null if nothing is selected
      */
@@ -94,148 +101,188 @@ public class View extends JFrame {
         return foodList.getSelectedValue();
     }
 
-
     /**
-     * Updates the log display area with the given text.
+     * Updates the log text area with the given log content.
      *
-     * @param content the log content to display
+     * @param content log entries to display
      */
     public void updateLogList(String content) {
         logDisplayArea.setText(content);
-
     }
 
-
     /**
-     * Updates the calorie label with the given value.
+     * Updates the calorie label with the total calories.
      *
-     * @param calories the total calories to display
+     * @param calories total calorie value
      */
     public void updateCalories(double calories) {
         calorieLabel.setText("Total Calories: " + calories);
-
     }
 
-
     /**
-     * Updates the weight label with the given value.
+     * Updates the weight label with the current weight.
      *
-     * @param weight the weight to display in kilograms
+     * @param weight weight in kilograms
      */
     public void updateWeight(double weight) {
-        weightLabel.setText("Weight " + weight + " kg");
-
+        weightLabel.setText("Weight: " + weight + " kg");
     }
 
-
     /**
-     * Adds an ActionListener to the Load Data button.
+     * Adds an ActionListener for the Load button.
      *
-     * @param listener the listener to add
+     * @param listener the listener to trigger on click
      */
     public void addLoadListener(ActionListener listener) {
         loadButton.addActionListener(listener);
-
     }
 
-
     /**
-     * Adds an ActionListener to the Add Log Entry button.
+     * Adds an ActionListener for the Add Log Entry button.
      *
-     * @param listener the listener to add
+     * @param listener the listener to trigger on click
      */
     public void addLogListener(ActionListener listener) {
         addLogButton.addActionListener(listener);
-
     }
 
-
     /**
-     * Adds an ActionListener to the Add New Food button.
+     * Adds an ActionListener for the Add Food/Recipe button.
      *
-     * @param listener the listener to add
+     * @param listener the listener to trigger on click
      */
     public void addFoodListener(ActionListener listener) {
         addFoodButton.addActionListener(listener);
-
     }
 
-
     /**
-     * Displays a message dialog with the given text.
+     * Displays a message dialog box.
      *
-     * @param message the message to display
+     * @param message the message to show to the user
      */
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
 
-
     /**
-     * Prompts the user to input the number of servings for a food.
+     * Prompts the user to enter the number of servings.
      *
-     * @return the user input as a string, or null if cancelled
+     * @return the input string (can be null if canceled)
      */
     public String promptForServings() {
-        return JOptionPane.showInputDialog(this, "Enter a number of servings: ");
-
+        return JOptionPane.showInputDialog(this, "Enter number of servings:");
     }
 
+    /**
+     * Prompts the user to choose between multiple food types (e.g., Basic or
+     * Recipe).
+     *
+     * @param message the message to display
+     * @param options an array of option names
+     * @return the index of the selected option
+     */
+    public int promptForType(String message, String[] options) {
+        return JOptionPane.showOptionDialog(
+                this,
+                message,
+                "Select Food Type",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+    }
 
     /**
-     * Displays a popup form where the user can enter the food name and
-     * all nutrition values (calories, fat, carbs, protein) in one dialog.
+     * Prompts the user to enter data for a BasicFood object.
      *
-     * @return a new Food object with the provided values, or null if cancelled or invalid
+     * @return a new BasicFood if input is valid, or null if canceled/invalid
      */
-    public Food promptForFoodWithNutrition() {
-        JTextField nameField = new JTextField();
-        String[] nutrients = { "Calories", "Fat", "Carbs", "Protein" };
+    public BasicFood promptForBasicFood() {
+        String[] labels = { "Name", "Calories", "Fat", "Carbs", "Protein" };
         Map<String, JTextField> fieldMap = new HashMap<>();
 
-        for (String nutrient : nutrients) {
-            fieldMap.put(nutrient, new JTextField());
-
-        }
-
         JPanel panel = new JPanel(new GridLayout(0, 2));
-        panel.add(new JLabel("Food Name:"));
-        panel.add(nameField);
-
-        for (String nutrient : nutrients) {
-            panel.add(new JLabel(nutrient + ":"));
-            panel.add(fieldMap.get(nutrient));
-
+        for (String label : labels) {
+            panel.add(new JLabel(label + ":"));
+            JTextField field = new JTextField();
+            panel.add(field);
+            fieldMap.put(label, field);
         }
 
-        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Food", JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE);
-
+        int result = JOptionPane.showConfirmDialog(this, panel, "Add Basic Food", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             try {
-                String name = nameField.getText().trim();
-                if (name.isEmpty())
-                    return null;
-                Map<String, Double> values = new HashMap<>();
-                for (String nutrient : nutrients) {
-                    String input = fieldMap.get(nutrient).getText().trim();
-                    values.put(nutrient.toLowerCase(), Double.parseDouble(input));
-                }
-                return new Food(
-                        name,
-                        values.get("calories"),
-                        values.get("fat"),
-                        values.get("carbs"),
-                        values.get("protein"))
+                String name = fieldMap.get("Name").getText().trim();
+                double cal = Double.parseDouble(fieldMap.get("Calories").getText().trim());
+                double fat = Double.parseDouble(fieldMap.get("Fat").getText().trim());
+                double carb = Double.parseDouble(fieldMap.get("Carbs").getText().trim());
+                double pro = Double.parseDouble(fieldMap.get("Protein").getText().trim());
 
-                ;
-
+                return new BasicFood(name, cal, fat, carb, pro);
             } catch (NumberFormatException e) {
-                showMessage("Invalid input! Please enter valid numbers.");
+                showMessage("Invalid input. Please enter numbers for nutrition.");
             }
-
         }
         return null;
     }
 
+    /**
+     * Prompts the user to build a Recipe by selecting ingredients and assigning
+     * servings.
+     *
+     * @param availableFoods list of available basic foods and recipes to choose
+     *                       from
+     * @return a completed Recipe or null if invalid or canceled
+     */
+    public Recipe promptForRecipe(List<Food> availableFoods) {
+        String name = JOptionPane.showInputDialog(this, "Enter recipe name:");
+        if (name == null || name.trim().isEmpty())
+            return null;
+
+        List<String> options = availableFoods.stream().map(Food::getName).toList();
+        JList<String> ingredientList = new JList<>(options.toArray(new String[0]));
+        ingredientList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        JScrollPane scroll = new JScrollPane(ingredientList);
+        scroll.setPreferredSize(new Dimension(300, 200));
+
+        int result = JOptionPane.showConfirmDialog(this, scroll, "Select Ingredients", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            Recipe recipe = new Recipe(name.trim());
+
+            Map<String, Food> foodMap = new HashMap<>();
+            for (Food f : availableFoods) {
+                foodMap.put(f.getName(), f);
+            }
+
+            for (String selectedName : ingredientList.getSelectedValuesList()) {
+                Food food = foodMap.get(selectedName);
+                if (food != null) {
+                    String servingsStr = JOptionPane.showInputDialog(this,
+                            "Enter number of servings for: " + food.getName());
+                    if (servingsStr == null)
+                        continue;
+
+                    try {
+                        double servings = Double.parseDouble(servingsStr.trim());
+                        if (servings > 0) {
+                            recipe.add(food, servings);
+                        }
+                    } catch (NumberFormatException e) {
+                        showMessage("Invalid servings amount for " + food.getName());
+                    }
+                }
+            }
+
+            if (recipe.getIngredientsWithServings().isEmpty()) {
+                showMessage("Recipe must have at least one valid ingredient with servings.");
+                return null;
+            }
+
+            return recipe;
+        }
+
+        return null;
+    }
 }
