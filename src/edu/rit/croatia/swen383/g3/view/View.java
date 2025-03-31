@@ -1,6 +1,6 @@
 package edu.rit.croatia.swen383.g3.view;
 
-import model.*;
+import  edu.rit.croatia.swen383.g3.model.*;
 
 import javax.swing.*;
 import java.awt.*;
