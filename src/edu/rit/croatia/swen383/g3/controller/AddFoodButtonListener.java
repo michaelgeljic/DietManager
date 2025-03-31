@@ -1,44 +1,60 @@
 package edu.rit.croatia.swen383.g3.controller;
 
-import edu.rit.croatia.swen383.g3.model.Food;
+import edu.rit.croatia.swen383.g3.model.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/*
-Handles the action of adding a new food item when the
-"Add New Food" button is clicked in the View.
-Prompts the user for food and nutrient input,
-creates a new Food object, stores it, and updates the view and CSV file.*/
+/**
+ * Listener for handling the "Add New Food" button in the View.
+ * Prompts the user to create either a BasicFood or a Recipe,
+ * and updates the model, view, and file storage accordingly.
+ */
 public class AddFoodButtonListener implements ActionListener {
     private final Controller controller;
 
-    /*
-    Constructs the listener and stores a reference to the main controller.*
-    @param controller the Controller instance to access model and view*/
+    /**
+     * Constructs the listener with access to the application's controller.
+     *
+     * @param controller the main Controller coordinating model and view
+     */
     public AddFoodButtonListener(Controller controller) {
-        this.controller = controller;}
+        this.controller = controller;
+    }
 
     /**
-     Called when the "Add New Food" button is clicked.
-     It shows a popup for food input, creates and saves a new food object,
-     updates the CSV file, and refreshes the food list in the view.*
-     @param e the event triggered by the button click*/
+     * Called when the "Add New Food" button is clicked.
+     * Opens a prompt for the user to choose between creating a basic food or a recipe,
+     * collects input through the View, and updates the model and foods.csv file.
+     *
+     * @param e the action event triggered by the button click
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
-        Food newFood = controller.getView().promptForFoodWithNutrition();
-        if (newFood == null) return;
+        // User decides if they’re adding a basic food or a recipe
+        String[] options = {"Basic Food", "Recipe"};
+        int choice = controller.getView().promptForType("What type of food would you like to add?", options);
 
-        controller.getFoods().addFood(newFood);
-        controller.getFileHandler().writeFoods(controller.getFoods().getAllFoods(), "./src/edu/rit/croatia/swen383/g3/data/foods.csv");
+        Food newFood = null;
 
-        List<String> foodNames = controller.getFoods().getAllFoods().stream()
-                .map(Food::getName)
-                .collect(Collectors.toList());
+        if (choice == 0) { // Basic Food
+            newFood = controller.getView().promptForBasicFood();
+        } else if (choice == 1) { // Recipe
+            newFood = controller.getView().promptForRecipe(controller.getFoods().getAllFoods());
+        }
 
-        controller.getView().updateFoodList(foodNames);
-        controller.getView().showMessage("New food added: " + newFood.getName());
+        if (newFood != null) {
+            controller.getFoods().addFood(newFood);
+            controller.getFileHandler().writeFoods(controller.getFoods().getAllFoods(), "./src/data/foods.csv");
+
+            List<String> foodNames = controller.getFoods().getAllFoods().stream()
+                    .map(Food::getName)
+                    .collect(Collectors.toList());
+
+            controller.getView().updateFoodList(foodNames);
+            controller.getView().showMessage("New food added: " + newFood.getName());
+        }
     }
 }
