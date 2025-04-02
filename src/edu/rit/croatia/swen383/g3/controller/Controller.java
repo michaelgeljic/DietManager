@@ -1,62 +1,92 @@
 package edu.rit.croatia.swen383.g3.controller;
 
+import java.time.LocalDate;
+import edu.rit.croatia.swen383.g3.model.Food;
 import edu.rit.croatia.swen383.g3.model.Foods;
 import edu.rit.croatia.swen383.g3.model.Logs;
 import edu.rit.croatia.swen383.g3.util.FileHandler;
 import edu.rit.croatia.swen383.g3.view.View;
 
-/*The Controller class coordinates interaction between the View and the Model
-in the Diet Manager application. It connects button actions to the appropriate
-logic using external ActionListeners.*/
+/**
+ * The {@code Controller} class coordinates communication between the model and the view
+ * in the Diet Manager application. It sets up listeners and manages shared application state
+ * like the selected date.
+ */
 public class Controller {
     private final Foods foods;
     private final Logs logs;
-    private final FileHandler fileHandler;
     private final View view;
+    private LocalDate currentDate = LocalDate.now();
 
-    /*Constructs the Controller and wires up the action listeners
-    for all buttons in the View.*
-    @param foods        the Foods model (data collection)
-    @param logs         the Logs model (user food log)
-    @param fileHandler  the FileHandler for reading/writing CSV files
-    @param view         the View (GUI) of the application*/
-    public Controller(Foods foods, Logs logs, FileHandler fileHandler, View view) {
+    /**
+     * Constructs the controller and wires up button listeners in the view.
+     * It also loads initial food data from file and updates the view.
+     *
+     * @param foods the model containing food data
+     * @param logs  the model containing log entries
+     * @param view  the application's graphical user interface
+     */
+    public Controller(Foods foods, Logs logs, View view) {
         this.foods = foods;
         this.logs = logs;
-        this.fileHandler = fileHandler;
         this.view = view;
 
-        // Connect button events to their listeners
-        view.addLoadListener(new LoadButtonListener(this));
+        foods.loadFromFile("assets/data/foods.csv", new FileHandler());
+
+        view.updateFoodList(foods.getAllFoods());
+        view.updateLogList("");
+        view.updateStats(0, 0, 0, 0);
+        view.updateWeight(0.0);
+        view.addChangeDateListener(new ChangeDateButtonListener(this));
+        view.updateCurrentDate(currentDate);
+
         view.addLogListener(new AddLogButtonListener(this));
         view.addFoodListener(new AddFoodButtonListener(this));
+        view.addSetGoalsListener(e -> view.promptAndSetGoals());
     }
 
-    /*
+    /**
+     * Gets the currently selected date.
+     *
+     * @return the current date
+     */
+    public LocalDate getCurrentDate() {
+        return currentDate;
+    }
 
-    Returns the Foods model instance.*
-            @return the Foods object*/
+    /**
+     * Sets the currently selected date.
+     *
+     * @param date the new date to set
+     */
+    public void setCurrentDate(LocalDate date) {
+        this.currentDate = date;
+    }
+
+    /**
+     * Returns the Foods model instance.
+     *
+     * @return the Foods object
+     */
     public Foods getFoods() {
-        return foods;}
+        return foods;
+    }
 
-    /*
-
-    Returns the Logs model instance.*
-            @return the Logs object*/
+    /**
+     * Returns the Logs model instance.
+     *
+     * @return the Logs object
+     */
     public Logs getLogs() {
-        return logs;}
+        return logs;
+    }
 
-    /*
-
-    Returns the FileHandler used for file operations.*
-            @return the FileHandler object*/
-    public FileHandler getFileHandler() {
-        return fileHandler;}
-
-    /*
-
-    Returns the View (GUI) instance.*
-            @return the View object*/
+    /**
+     * Returns the View instance representing the GUI.
+     *
+     * @return the View object
+     */
     public View getView() {
-        return view;}
+        return view;
+    }
 }

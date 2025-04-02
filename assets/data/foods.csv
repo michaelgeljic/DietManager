@@ -9,7 +9,6 @@ b,Peanut Butter (tbsp),95.0,8.0,3.5,4.0
 b,Jelly (tbsp),56.0,6.3,14.7,0.0
 b,Cola (can),140.0,0.0,39.0,0.0
 r,HotDog+Bun,Hot Dog Bun,1.0,Hot Dog,1.0
-r,PB Sandwich,Bread (slice),2.0,Peanut Butter (tbsp),2.0
-r,PB+J Sandwich,PB Sandwich,1.0,Jelly (tbsp),1.0
-r,Bad Dinner,Potato Salad (cup),1.8,Pizza Slice,2.0,HotDog+Bun,2.0,Berry Pie Slice,1.5,Cola (can),1.0
-
+r,PB Sandwich,Peanut Butter (tbsp),2.0,Bread (slice),2.0
+r,PB+J Sandwich,Jelly (tbsp),1.0,PB Sandwich,1.0
+r,Bad Dinner,HotDog+Bun,2.0,Berry Pie Slice,1.5,Cola (can),1.0,Pizza Slice,2.0,Potato Salad (cup),1.8

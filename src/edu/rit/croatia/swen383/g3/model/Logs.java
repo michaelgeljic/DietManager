@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.rit.croatia.swen383.g3.util.FileHandler;
+
 /**
  * Represents a collection of log entries for food consumed over time.
- * Provides methods to add logs, retrieve logs for a specific date, and
- * calculate daily totals.
+ * Provides methods to add logs, retrieve logs for a specific date,
+ * calculate daily nutrient totals, and save logs to a CSV file.
  */
 public class Logs {
     private List<Log> logEntries;
@@ -21,6 +23,7 @@ public class Logs {
 
     /**
      * Adds a new log entry to the list.
+     * The listener or controller is responsible for view updates.
      *
      * @param log the log entry to add
      */
@@ -56,6 +59,52 @@ public class Logs {
             total += l.getTotalCalories();
         }
         return total;
+    }
+
+    /**
+     * Calculates the total fat consumed on a specific date.
+     *
+     * @param date the date to calculate total fat for
+     * @return the total fat consumed on that date
+     */
+    public double getTotalFatForDate(LocalDate date) {
+        return getLogForDate(date).stream()
+                .mapToDouble(Log::getTotalFat)
+                .sum();
+    }
+
+    /**
+     * Calculates the total carbohydrates consumed on a specific date.
+     *
+     * @param date the date to calculate total carbs for
+     * @return the total carbs consumed on that date
+     */
+    public double getTotalCarbsForDate(LocalDate date) {
+        return getLogForDate(date).stream()
+                .mapToDouble(Log::getTotalCarbs)
+                .sum();
+    }
+
+    /**
+     * Calculates the total protein consumed on a specific date.
+     *
+     * @param date the date to calculate total protein for
+     * @return the total protein consumed on that date
+     */
+    public double getTotalProteinForDate(LocalDate date) {
+        return getLogForDate(date).stream()
+                .mapToDouble(Log::getTotalProtein)
+                .sum();
+    }
+
+    /**
+     * Saves all current log entries to the specified CSV file using the given FileHandler.
+     *
+     * @param filename the file path to save to
+     * @param handler  the FileHandler to use
+     */
+    public void saveLogsToFile(String filename, FileHandler handler) {
+        handler.writeLogs(logEntries, filename);
     }
 
     /**
