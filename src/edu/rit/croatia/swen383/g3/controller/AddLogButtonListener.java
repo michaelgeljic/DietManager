@@ -75,5 +75,6 @@ public class AddLogButtonListener implements ActionListener {
         double carbs = controller.getLogs().getTotalCarbsForDate(selectedDate);
         double protein = controller.getLogs().getTotalProteinForDate(selectedDate);
         controller.getView().updateStats(calories, fat, carbs, protein);
+        controller.getLogs().saveLogsToFile("assets/data/log.csv", new edu.rit.croatia.swen383.g3.util.FileHandler());
     }
 }
