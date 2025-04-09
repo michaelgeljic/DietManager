@@ -1,11 +1,9 @@
 package edu.rit.croatia.swen383.g3.util;
 
 import edu.rit.croatia.swen383.g3.model.*;
-import edu.rit.croatia.swen383.g3.model.Log;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.*;;
 
 /**
@@ -138,6 +136,33 @@ public class FileHandler {
      * @return an empty list (for now)
      */
     public List<Log> readLogs(String filename, List<Food> availableFoods) {
-        return new ArrayList<>();
+    List<Log> logs = new ArrayList<>();
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",");
+            if (parts.length == 6 && "f".equals(parts[3])) {
+                int year = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]);
+                int day = Integer.parseInt(parts[2]);
+                String foodName = parts[4];
+                double servings = Double.parseDouble(parts[5]);
+
+                Food food = availableFoods.stream()
+                        .filter(f -> f.getName().equalsIgnoreCase(foodName))
+                        .findFirst()
+                        .orElse(null);
+
+                if (food != null) {
+                    logs.add(new Log(LocalDate.of(year, month, day), food, servings));
+                }
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("Error reading log.csv: " + e.getMessage());
     }
+
+    return logs;
+}
 }
