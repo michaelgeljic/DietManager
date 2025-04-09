@@ -1,5 +1,5 @@
 # -------------------------
-# NetBeans related folders
+# NetBeans/IntelliJ related folders
 # -------------------------
 nbproject/private/
 nbproject/Makefile-*.mk
@@ -11,6 +11,7 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 .nb-gradle/
+.idea/
 
 # -------------------------
 # Compiled class file
