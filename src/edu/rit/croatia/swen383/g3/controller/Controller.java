@@ -1,15 +1,21 @@
 package edu.rit.croatia.swen383.g3.controller;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import edu.rit.croatia.swen383.g3.model.Food;
 import edu.rit.croatia.swen383.g3.model.Foods;
+import edu.rit.croatia.swen383.g3.model.Log;
 import edu.rit.croatia.swen383.g3.model.Logs;
 import edu.rit.croatia.swen383.g3.util.FileHandler;
 import edu.rit.croatia.swen383.g3.view.View;
 
 /**
- * The {@code Controller} class coordinates communication between the model and the view
- * in the Diet Manager application. It sets up listeners and manages shared application state
+ * The {@code Controller} class coordinates communication between the model and
+ * the view
+ * in the Diet Manager application. It sets up listeners and manages shared
+ * application state
  * like the selected date.
  */
 public class Controller {
@@ -40,7 +46,15 @@ public class Controller {
         view.updateWeight(0.0);
         view.addChangeDateListener(new ChangeDateButtonListener(this));
         view.updateCurrentDate(currentDate);
+        List<Log> todayLogs = logs.getLogForDate(currentDate);
+        String logText = todayLogs.stream().map(Log::toString).collect(Collectors.joining("\n"));
+        view.updateLogList(logText);
 
+        double calories = logs.getTotalCaloriesForDate(currentDate);
+        double fat = logs.getTotalFatForDate(currentDate);
+        double carbs = logs.getTotalCarbsForDate(currentDate);
+        double protein = logs.getTotalProteinForDate(currentDate);
+        view.updateStats(calories, fat, carbs, protein);
         view.addLogListener(new AddLogButtonListener(this));
         view.addFoodListener(new AddFoodButtonListener(this));
         view.addSetGoalsListener(e -> view.promptAndSetGoals());
