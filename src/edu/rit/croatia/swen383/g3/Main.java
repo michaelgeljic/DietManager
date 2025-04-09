@@ -19,9 +19,12 @@ public class Main {
      */
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(() -> {
+            // Create shared FileHandler instance
+            FileHandler handler = new FileHandler();
+
             // Initialize model, view
-            Foods foods = new Foods();
-            Logs logs = new Logs();
+            Foods foods = new Foods(handler);
+            Logs logs = new Logs(handler);
             View view = new View();
 
             // Set up controller and link everything

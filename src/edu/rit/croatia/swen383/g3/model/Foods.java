@@ -1,80 +1,77 @@
 package edu.rit.croatia.swen383.g3.model;
 
+import edu.rit.croatia.swen383.g3.util.FileHandler;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.rit.croatia.swen383.g3.util.FileHandler;
-
 /**
- * Represents a collection of food items, including both basic foods and recipes.
- * Acts as a storage and lookup class for all loaded foods in the application.
- * Also handles persistence to and from the foods.csv file.
+ * Manages a list of all foods (basic and recipes) in the application.
+ * Responsible for loading, saving, and adding food items.
  */
 public class Foods {
     private List<Food> foodList;
+    private final FileHandler fileHandler;
 
     /**
-     * Constructs an empty Foods collection.
+     * Constructs a Foods model using the provided FileHandler for persistence.
+     *
+     * @param fileHandler the FileHandler to use for reading/writing food data
      */
-    public Foods() {
-        foodList = new ArrayList<>();
+    public Foods(FileHandler fileHandler) {
+        this.fileHandler = fileHandler;
+        this.foodList = new ArrayList<>();
     }
 
     /**
-     * Adds a new food item (BasicFood or Recipe) to the collection.
-     * Automatically saves the updated food list to file.
+     * Loads food data from a file and populates the food list.
      *
-     * @param food the food item to add
+     * @param filename the CSV file path
+     */
+    public void loadFromFile(String filename) {
+        foodList = fileHandler.readFoods(filename);
+    }
+
+    /**
+     * Saves current food list to file.
+     *
+     * @param filename the destination CSV file
+     */
+    public void saveToFile(String filename) {
+        fileHandler.writeFoods(foodList, filename);
+    }
+
+    /**
+     * Adds a new food item and immediately saves to file.
+     *
+     * @param food the food to add
      */
     public void addFood(Food food) {
         foodList.add(food);
-        saveFoodsToFile("./assets/data/foods.csv");
+        saveToFile("assets/data/foods.csv");
     }
 
     /**
-     * Returns a list of all food items in the collection.
+     * Retrieves all loaded food items.
      *
-     * @return the list of foods
+     * @return list of all foods
      */
     public List<Food> getAllFoods() {
         return foodList;
     }
 
     /**
-     * Finds a food item in the collection by its name.
+     * Finds a food item by name (case-insensitive).
      *
-     * @param name the name of the food to find
-     * @return the matching food object, or null if not found
+     * @param name the name to search for
+     * @return the matching Food or null if not found
      */
     public Food findFoodByName(String name) {
-        for (Food f : foodList) {
-            if (f.getName().equalsIgnoreCase(name)) {
-                return f;
+        for (Food food : foodList) {
+            if (food.getName().equalsIgnoreCase(name)) {
+                return food;
             }
         }
         return null;
-    }
-
-    /**
-     * Saves the current food list to the specified CSV file using FileHandler.
-     *
-     * @param filename the file path to save the food list to
-     */
-    private void saveFoodsToFile(String filename) {
-        new FileHandler().writeFoods(foodList, filename);
-    }
-
-    /**
-     * Loads foods from the given CSV file using a FileHandler and adds them to the collection.
-     * Existing foods are not cleared before loading.
-     *
-     * @param filename the path to the foods.csv file
-     * @param handler  the FileHandler used for reading the file
-     */
-    public void loadFromFile(String filename, FileHandler handler) {
-        List<Food> loadedFoods = handler.readFoods(filename);
-        for (Food food : loadedFoods) {
-            addFood(food);
-        }
     }
 }

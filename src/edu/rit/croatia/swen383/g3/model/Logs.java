@@ -1,10 +1,10 @@
 package edu.rit.croatia.swen383.g3.model;
 
+import edu.rit.croatia.swen383.g3.util.FileHandler;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import edu.rit.croatia.swen383.g3.util.FileHandler;
 
 /**
  * Represents a collection of log entries for food consumed over time.
@@ -13,22 +13,34 @@ import edu.rit.croatia.swen383.g3.util.FileHandler;
  */
 public class Logs {
     private List<Log> logEntries;
+    private final FileHandler fileHandler;
 
     /**
-     * Constructs a new Logs object with an empty list of log entries.
+     * Constructs a Logs model using the provided FileHandler.
+     *
+     * @param fileHandler the FileHandler to use for reading/writing log data
      */
-    public Logs() {
-        logEntries = new ArrayList<>();
+    public Logs(FileHandler fileHandler) {
+        this.fileHandler = fileHandler;
+        this.logEntries = new ArrayList<>();
     }
 
     /**
      * Adds a new log entry to the list.
-     * The listener or controller is responsible for view updates.
      *
      * @param log the log entry to add
      */
     public void addLog(Log log) {
         logEntries.add(log);
+    }
+
+    /**
+     * Adds multiple log entries to the list.
+     *
+     * @param logsToAdd the list of logs to add
+     */
+    public void addAllLogs(List<Log> logsToAdd) {
+        logEntries.addAll(logsToAdd);
     }
 
     /**
@@ -48,17 +60,35 @@ public class Logs {
     }
 
     /**
+     * Saves all current log entries to the specified CSV file.
+     *
+     * @param filename the file path to save to
+     */
+    public void saveLogsToFile(String filename) {
+        fileHandler.writeLogs(logEntries, filename);
+    }
+
+    /**
+     * Reads log entries from file using available food items.
+     *
+     * @param filename       the log CSV file
+     * @param availableFoods the list of known foods to match
+     * @return list of parsed logs
+     */
+    public List<Log> readLogs(String filename, List<Food> availableFoods) {
+        return fileHandler.readLogs(filename, availableFoods);
+    }
+
+    /**
      * Calculates the total calories consumed on a specific date.
      *
      * @param date the date to calculate total calories for
      * @return the total calories consumed on that date
      */
     public double getTotalCaloriesForDate(LocalDate date) {
-        double total = 0;
-        for (Log l : getLogForDate(date)) {
-            total += l.getTotalCalories();
-        }
-        return total;
+        return getLogForDate(date).stream()
+                .mapToDouble(Log::getTotalCalories)
+                .sum();
     }
 
     /**
@@ -98,31 +128,11 @@ public class Logs {
     }
 
     /**
-     * Saves all current log entries to the specified CSV file using the given
-     * FileHandler.
+     * Retrieves all logs (not filtered).
      *
-     * @param filename the file path to save to
-     * @param handler  the FileHandler to use
-     */
-    public void saveLogsToFile(String filename, FileHandler handler) {
-        handler.writeLogs(logEntries, filename);
-    }
-
-    /**
-     * Retrieves all log entries.
-     *
-     * @return the full list of logs
+     * @return list of all logs
      */
     public List<Log> getAllLogs() {
         return logEntries;
-    }
-
-    /**
-     * Adds a list of log entries to the existing list.
-     * 
-     * @param logsToAdd the list of logs to add
-     */
-    public void addAllLogs(List<Log> logsToAdd) {
-        logEntries.addAll(logsToAdd);
     }
 }

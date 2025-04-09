@@ -37,7 +37,7 @@ public class Controller {
         this.logs = logs;
         this.view = view;
 
-        foods.loadFromFile("assets/data/foods.csv", new FileHandler());
+        foods.loadFromFile("assets/data/foods.csv");
         logs.addAllLogs(new FileHandler().readLogs("assets/data/log.csv", foods.getAllFoods()));
 
         view.updateFoodList(foods.getAllFoods());
