@@ -98,7 +98,8 @@ public class Logs {
     }
 
     /**
-     * Saves all current log entries to the specified CSV file using the given FileHandler.
+     * Saves all current log entries to the specified CSV file using the given
+     * FileHandler.
      *
      * @param filename the file path to save to
      * @param handler  the FileHandler to use
@@ -114,5 +115,14 @@ public class Logs {
      */
     public List<Log> getAllLogs() {
         return logEntries;
+    }
+
+    /**
+     * Adds a list of log entries to the existing list.
+     * 
+     * @param logsToAdd the list of logs to add
+     */
+    public void addAllLogs(List<Log> logsToAdd) {
+        logEntries.addAll(logsToAdd);
     }
 }
