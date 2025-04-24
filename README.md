@@ -20,7 +20,11 @@
 # DietManager800G3 V2 (W13C2 Check)
 - [ ] All group members are missing except Felicio
 - [ ] SRC: Not implemented. 
-- [ ] CD: No CD
+- [ ] CD: Is in place, but the source code is missing so there might be some changes in the future.
 - [ ] SD: No SD
+
+This is a quick but important status update on your project progress. As of today, there have been no commits to your GitLab repository since April 9, which is a serious concern. You're currently not following the GitLab flow, which is essential not just for version control, but also for transparency and collaboration within the team and with your instructor. 
+That’s not acceptable at this stage of the project. Everyone needs to start committing their changes, pushing updates regularly, and using merge requests. Let’s get back on track immediately. 
+Please commit your code starting with today.
 
 
