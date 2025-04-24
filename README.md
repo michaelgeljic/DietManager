@@ -17,4 +17,10 @@
 - [ ] CD: Under construction
 - [ ] SD: Under contruction 
 
+# DietManager800G3 V2 (W13C2 Check)
+- [ ] All group members are missing except Felicio
+- [ ] SRC: Not implemented. 
+- [ ] CD: No CD
+- [ ] SD: No SD
+
 
