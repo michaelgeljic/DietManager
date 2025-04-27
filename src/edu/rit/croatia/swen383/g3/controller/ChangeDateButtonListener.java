@@ -47,17 +47,8 @@ public class ChangeDateButtonListener implements ActionListener {
             controller.setCurrentDate(date);
             controller.getView().updateCurrentDate(date);
 
-            var logs = controller.getLogs().getLogForDate(date);
-            String text = logs.stream()
-                    .map(log -> log.toString())
-                    .collect(java.util.stream.Collectors.joining("\n"));
-            controller.getView().updateLogList(text);
-
-            double calories = controller.getLogs().getTotalCaloriesForDate(date);
-            double fat = controller.getLogs().getTotalFatForDate(date);
-            double carbs = controller.getLogs().getTotalCarbsForDate(date);
-            double protein = controller.getLogs().getTotalProteinForDate(date);
-            controller.getView().updateStats(calories, fat, carbs, protein);
+            // Refresh everything (logs, stats, weight, goals)
+            controller.refreshLogsAndStats();
 
         } catch (Exception ex) {
             controller.getView().showMessage("Invalid date format. Use YYYY-MM-DD.");

@@ -36,45 +36,33 @@ public class AddLogButtonListener implements ActionListener {
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        List<String> selectedNames = controller.getView().getSelectedFoodNames();
-        if (selectedNames == null || selectedNames.isEmpty()) {
-            controller.getView().showMessage("Please select at least one food.");
-            return;
-        }
-
-        List<Food> selectedFoods = selectedNames.stream()
-                .map(display -> display.split("—")[0].trim())
-                .map(controller.getFoods()::findFoodByName)
-                .filter(f -> f != null)
-                .collect(Collectors.toList());
-
-        if (selectedFoods.isEmpty()) {
-            controller.getView().showMessage("No valid foods selected.");
-            return;
-        }
-
-        Map<Food, Double> servingsMap = controller.getView().promptForServingsForMultipleFoods(selectedFoods);
-        if (servingsMap == null || servingsMap.isEmpty()) {
-            return;
-        }
+        // ask user whether to log food or exercise
+        String[] options = {"Food", "Exercise" };
+        int choice = controller.getView().promptForType("What would you like to log?", options);
 
         LocalDate selectedDate = controller.getCurrentDate();
+        //log food
+        if (choice == 0) {
+            Object[] foodResult = controller.getView().promptForFoodAndServings(controller.getFoods().getAllFoods());
+            if (foodResult == null) return;
 
-        for (Map.Entry<Food, Double> entry : servingsMap.entrySet()) {
-            controller.getLogs().addLog(new Log(selectedDate, entry.getKey(), entry.getValue()));
+            Food selectedFood = (Food) foodResult[0];
+            double servings = (double) foodResult[1];
+
+            controller.getLogs().addLog(new Log(selectedDate, selectedFood, servings));
+
+            // log exercise
+        } else if (choice == 1) {
+            Object[] exerciseResult = controller.getView().promptForExerciseAndMinutes(controller.getExercises().getAllExercises());
+            if (exerciseResult == null) return;
+
+            Exercise selectedExercise = (Exercise) exerciseResult[0];
+            double minutes = (double) exerciseResult[1];
+            
+            controller.getLogs().addExerciseLog(selectedDate, new ExerciseEntry(selectedExercise, minutes));
         }
-
-        List<Log> logsForDate = controller.getLogs().getLogForDate(selectedDate);
-        String logText = logsForDate.stream()
-                .map(Log::toString)
-                .collect(Collectors.joining("\n"));
-        controller.getView().updateLogList(logText);
-
-        double calories = controller.getLogs().getTotalCaloriesForDate(selectedDate);
-        double fat = controller.getLogs().getTotalFatForDate(selectedDate);
-        double carbs = controller.getLogs().getTotalCarbsForDate(selectedDate);
-        double protein = controller.getLogs().getTotalProteinForDate(selectedDate);
-        controller.getView().updateStats(calories, fat, carbs, protein);
+        //refresh logs and stats
+        controller.refreshLogsAndStats();
         controller.getLogs().saveLogsToFile("assets/data/log.csv");
     }
 }
