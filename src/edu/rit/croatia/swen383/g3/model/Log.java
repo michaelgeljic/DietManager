@@ -4,8 +4,8 @@ import java.time.LocalDate;
 
 /**
  * Represents a log entry for a specific food consumed on a given date.
- * Stores the food, the number of servings, and provides total nutrient
- * calculations.
+ * Stores the food item, number of servings, and provides methods to calculate
+ * total nutritional values based on servings.
  */
 public class Log {
     private LocalDate date;
@@ -13,7 +13,7 @@ public class Log {
     private double servings;
 
     /**
-     * Constructs a new Log entry with the specified date, food, and servings.
+     * Constructs a new {@code Log} entry with the specified date, food, and number of servings.
      *
      * @param date     the date the food was consumed
      * @param food     the food item logged
@@ -26,80 +26,81 @@ public class Log {
     }
 
     /**
-     * Gets the date of this log entry.
+     * Returns the date of this log entry.
      *
-     * @return the date
+     * @return the date of consumption
      */
     public LocalDate getDate() {
         return date;
     }
 
     /**
-     * Gets the food item in this log entry.
+     * Returns the food item recorded in this log entry.
      *
-     * @return the food
+     * @return the food item
      */
     public Food getFood() {
         return food;
     }
 
     /**
-     * Gets the number of servings recorded in this log.
+     * Returns the number of servings consumed for this food.
      *
-     * @return servings consumed
+     * @return the number of servings
      */
     public double getServings() {
         return servings;
     }
 
     /**
-     * Calculates the total calories consumed based on the servings.
+     * Calculates and returns the total calories consumed based on the servings.
      *
-     * @return total calories
+     * @return total calories consumed
      */
     public double getTotalCalories() {
         return servings * food.getCalories();
     }
 
     /**
-     * Calculates the total fat consumed based on the servings.
+     * Calculates and returns the total fat consumed based on the servings.
      *
-     * @return total fat in grams
+     * @return total fat consumed (in grams)
      */
     public double getTotalFat() {
         return servings * food.getFat();
     }
 
     /**
-     * Calculates the total carbohydrates consumed based on the servings.
+     * Calculates and returns the total carbohydrates consumed based on the servings.
      *
-     * @return total carbs in grams
+     * @return total carbohydrates consumed (in grams)
      */
     public double getTotalCarbs() {
         return servings * food.getCarbs();
     }
 
     /**
-     * Calculates the total protein consumed based on the servings.
+     * Calculates and returns the total protein consumed based on the servings.
      *
-     * @return total protein in grams
+     * @return total protein consumed (in grams)
      */
     public double getTotalProtein() {
         return servings * food.getProtein();
     }
 
     /**
-     * Returns a string representation of the log entry including the date,
-     * servings, food name, and total nutrients.
+     * Returns a formatted string representation of this log entry, including the number
+     * of servings, food name, and total nutritional values.
      *
-     * @return formatted string summary of the log entry
+     * @return a formatted string summarizing the log
      */
     @Override
     public String toString() {
-        return date + ": " + servings + " x " + food.getName() +
-                " (" + getTotalCalories() + " cal, " +
-                getTotalFat() + "g fat, " +
-                getTotalCarbs() + "g carbs, " +
-                getTotalProtein() + "g protein)";
+        return String.format("%.1f x %s (%.1f cal, %.1f fat, %.1f carbs, %.1f protein)",
+                servings, food.getName(),
+                Math.round(getTotalCalories() * 10.0) / 10.0,
+                Math.round(getTotalFat() * 10.0) / 10.0,
+                Math.round(getTotalCarbs() * 10.0) / 10.0,
+                Math.round(getTotalProtein() * 10.0) / 10.0);
     }
 }
