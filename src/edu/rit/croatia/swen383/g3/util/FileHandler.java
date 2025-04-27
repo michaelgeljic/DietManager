@@ -4,13 +4,142 @@ import edu.rit.croatia.swen383.g3.model.*;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.*;;
+import java.util.*;
 
-/**
- * Handles reading and writing of food and log data to and from CSV files.
- * Supports both basic foods and composite recipes using the Composite Design Pattern.
- */
 public class FileHandler {
+
+    // Reading exercises from exercise.csv
+    public List<Exercise> readExercises(String filename) {
+        List<Exercise> exercises = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("e,")) {
+                    String[] parts = line.split(",");
+                    if (parts.length == 3) {
+                        String name = parts[1];
+                        double cal = Double.parseDouble(parts[2]);
+                        exercises.add(new Exercise(name, cal));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading exercises: " + e.getMessage());
+        }
+        return exercises;
+    }
+
+    // Writing exercises to exercise.csv
+    public void writeExercises(List<Exercise> exercises, String filename) {
+        try (PrintWriter writer = new PrintWriter(filename)) {
+            for (Exercise e : exercises) {
+                writer.println("e," + e.getName() + "," + e.getCaloriesPerKgPerHour());
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing exercises: " + e.getMessage());
+        }
+    }
+
+    // Reading logs (foods, exercises, weight, calorie goal)
+    public void readLogs(String filename, List<Food> foods, Exercises exercises, Logs logs) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5) {
+                    int year = Integer.parseInt(parts[0]);
+                    int month = Integer.parseInt(parts[1]);
+                    int day = Integer.parseInt(parts[2]);
+                    LocalDate date = LocalDate.of(year, month, day);
+
+                    switch (parts[3]) {
+                        case "f": { // Food entry
+                            String foodName = parts[4];
+                            double servings = Double.parseDouble(parts[5]);
+                            Food food = foods.stream()
+                                    .filter(f -> f.getName().equalsIgnoreCase(foodName))
+                                    .findFirst().orElse(null);
+                            if (food != null) {
+                                logs.addLog(new Log(date, food, servings));
+                            }
+                            break;
+                        }
+                        case "e": { // Exercise entry
+                            String exerciseName = parts[4];
+                            double minutes = Double.parseDouble(parts[5]);
+                            Exercise exercise = exercises.getAllExercises().stream()
+                                    .filter(e -> e.getName().equalsIgnoreCase(exerciseName))
+                                    .findFirst().orElse(null);
+                            if (exercise != null) {
+                                logs.addExerciseLog(date, new ExerciseEntry(exercise, minutes));
+                            }
+                            break;
+                        }
+                        case "w": { // Weight entry
+                            double weight = Double.parseDouble(parts[4]);
+                            logs.setWeightForDate(date, weight);
+                            break;
+                        }
+                        case "c": { // Calorie goal entry
+                            double calorieGoal = Double.parseDouble(parts[4]);
+                            logs.setCalorieGoalForDate(date, calorieGoal);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading logs: " + e.getMessage());
+        }
+    }
+
+    // Writing logs (foods, exercises, weight, calorie goal)
+    public void writeLogs(String filename, Logs logs) {
+        try (PrintWriter writer = new PrintWriter(filename)) {
+            // Write food logs
+            for (Log log : logs.getAllLogs()) {
+                String year = String.valueOf(log.getDate().getYear());
+                String month = String.format("%02d", log.getDate().getMonthValue());
+                String day = String.format("%02d", log.getDate().getDayOfMonth());
+                writer.println(year + "," + month + "," + day + ",f," +
+                        log.getFood().getName() + "," +
+                        log.getServings());
+            }
+
+            // Write exercise logs
+            for (LocalDate date : logs.getAllExerciseLogDates()) {
+                String year = String.valueOf(date.getYear());
+                String month = String.format("%02d", date.getMonthValue());
+                String day = String.format("%02d", date.getDayOfMonth());
+                for (ExerciseEntry entry : logs.getExercisesForDate(date)) {
+                    writer.println(year + "," + month + "," + day + ",e," +
+                            entry.getExercise().getName() + "," +
+                            entry.getMinutes());
+                }
+            }
+
+            // Write weights
+            for (LocalDate date : logs.getAllWeightDates()) {
+                String year = String.valueOf(date.getYear());
+                String month = String.format("%02d", date.getMonthValue());
+                String day = String.format("%02d", date.getDayOfMonth());
+                writer.println(year + "," + month + "," + day + ",w," +
+                        logs.getWeightForExactDate(date));
+            }
+
+            // Write calorie goals
+            for (LocalDate date : logs.getAllCalorieGoalDates()) {
+                String year = String.valueOf(date.getYear());
+                String month = String.format("%02d", date.getMonthValue());
+                String day = String.format("%02d", date.getDayOfMonth());
+                writer.println(year + "," + month + "," + day + ",c," +
+                        logs.getCalorieGoalForExactDate(date));
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error writing logs: " + e.getMessage());
+        }
+    }
 
     /**
      * Reads food data from a CSV file and returns a list of Food objects.
@@ -106,63 +235,4 @@ public class FileHandler {
         }
     }
 
-    /**
-     * Writes a list of Log entries to a CSV file.
-     *
-     * CSV Format: year,month,day,f,foodName,servings
-     *
-     * @param logs     the list of logs to save
-     * @param filename the path to the log.csv file
-     */
-    public void writeLogs(List<Log> logs, String filename) {
-        try (PrintWriter writer = new PrintWriter(filename)) {
-            for (Log log : logs) {
-                writer.println(log.getDate().getYear() + "," +
-                        log.getDate().getMonthValue() + "," +
-                        log.getDate().getDayOfMonth() + ",f," +
-                        log.getFood().getName() + "," +
-                        log.getServings());
-            }
-        } catch (IOException e) {
-            System.out.println("Error writing to log.csv: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Placeholder for reading logs from CSV. Not yet implemented.
-     *
-     * @param filename        the path to the log.csv file
-     * @param availableFoods  list of loaded foods to match log entries
-     * @return an empty list (for now)
-     */
-    public List<Log> readLogs(String filename, List<Food> availableFoods) {
-    List<Log> logs = new ArrayList<>();
-
-    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(",");
-            if (parts.length == 6 && "f".equals(parts[3])) {
-                int year = Integer.parseInt(parts[0]);
-                int month = Integer.parseInt(parts[1]);
-                int day = Integer.parseInt(parts[2]);
-                String foodName = parts[4];
-                double servings = Double.parseDouble(parts[5]);
-
-                Food food = availableFoods.stream()
-                        .filter(f -> f.getName().equalsIgnoreCase(foodName))
-                        .findFirst()
-                        .orElse(null);
-
-                if (food != null) {
-                    logs.add(new Log(LocalDate.of(year, month, day), food, servings));
-                }
-            }
-        }
-    } catch (IOException e) {
-        System.out.println("Error reading log.csv: " + e.getMessage());
-    }
-
-    return logs;
-}
 }
