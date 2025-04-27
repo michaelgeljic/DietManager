@@ -1,35 +1,30 @@
 package edu.rit.croatia.swen383.g3;
 
-import edu.rit.croatia.swen383.g3.view.View;
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
+import edu.rit.croatia.swen383.g3.controller.Controller;
 import edu.rit.croatia.swen383.g3.model.*;
-import edu.rit.croatia.swen383.g3.util.*;
-import edu.rit.croatia.swen383.g3.controller.*;
-
-/**
- * The entry point of the Diet Manager application.
- * Initializes the model, view, controller, and launches the GUI.
- */
+import edu.rit.croatia.swen383.g3.util.FileHandler;
+import edu.rit.croatia.swen383.g3.view.View;
+import com.formdev.flatlaf.FlatLightLaf;  // Import FlatLaf
 
 public class Main {
 
-    /**
-     * Launches the application on the Swing event dispatch thread.
-     *
-     * @param args command-line arguments (not used)
-     */
     public static void main(String[] args) {
         javax.swing.SwingUtilities.invokeLater(() -> {
-            // Create shared FileHandler instance
-            FileHandler handler = new FileHandler();
+           try {
+                FlatIntelliJLaf.setup();  // Use FlatDarkLaf.setup() for dark mode
+            } catch (Exception e) {
+                System.out.println("Could not set FlatLaf look and feel: " + e.getMessage());
+            }
 
-            // Initialize model, view
+            // Your usual setup
+            FileHandler handler = new FileHandler();
             Foods foods = new Foods(handler);
             Logs logs = new Logs(handler);
+            Exercises exercises = new Exercises();
             View view = new View();
-
-            // Set up controller and link everything
-            new Controller(foods, logs, view);
-            // Display the GUI
+            new Controller(foods, logs, exercises, view);
             view.setVisible(true);
         });
     }
