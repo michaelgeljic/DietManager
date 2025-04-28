@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class View extends JFrame {
     private int calorieGoal = 2000;
@@ -30,7 +31,7 @@ public class View extends JFrame {
 
     private DefaultListModel<String> foodListModel;
     private JList<String> foodList;
-    private JTextArea logDisplayArea;
+    // private JTextArea logDisplayArea;
 
     private JButton addLogButton;
     private JButton addFoodButton;
@@ -38,6 +39,18 @@ public class View extends JFrame {
 
     private ChartPanel pieChartPanel;
     private DefaultPieDataset pieDataset;
+
+    private DefaultListModel<String> exerciseListModel;
+    private JList<String> exerciseList;
+    // private JTextArea exerciseLogTextArea;
+    private JButton addExerciseButton;
+    private JButton deleteLogButton;
+    private DefaultListModel<String> foodLogListModel;
+    private JList<String> foodLogList;
+
+    private DefaultListModel<String> exerciseLogListModel;
+    private JList<String> exerciseLogList;
+    private JButton editExerciseButton;
 
     /**
      * The {@code View} class is responsible for creating and managing the graphical
@@ -57,47 +70,56 @@ public class View extends JFrame {
         setSize(900, 600);
         setLayout(new BorderLayout());
 
+        // Foods
         foodListModel = new DefaultListModel<>();
         foodList = new JList<>(foodListModel);
         foodList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
         JScrollPane foodScroll = new JScrollPane(foodList);
         foodScroll.setPreferredSize(new Dimension(400, 200));
-
         JPanel foodPanel = new JPanel(new BorderLayout());
         foodPanel.add(new JLabel("Available Foods (Click to Select)"), BorderLayout.NORTH);
         foodPanel.add(foodScroll, BorderLayout.CENTER);
 
-        logDisplayArea = new JTextArea(12, 30);
-        logDisplayArea.setEditable(false);
-        JScrollPane logScroll = new JScrollPane(logDisplayArea);
-        JPanel logPanel = new JPanel(new BorderLayout());
+        // Exercises
+        exerciseListModel = new DefaultListModel<>();
+        exerciseList = new JList<>(exerciseListModel);
+        exerciseList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JScrollPane exerciseScroll = new JScrollPane(exerciseList);
+        exerciseScroll.setPreferredSize(new Dimension(400, 150));
+        JPanel exercisePanel = new JPanel(new BorderLayout());
+        exercisePanel.add(new JLabel("Available Exercises (Click to Select)"), BorderLayout.NORTH);
+        exercisePanel.add(exerciseScroll, BorderLayout.CENTER);
 
-        currentDateLabel = new JLabel("Date: " + LocalDate.now()); // Initial text
-        logPanel.add(currentDateLabel, BorderLayout.NORTH);
-        logPanel.add(logScroll, BorderLayout.CENTER);
+        // Combine Foods + Exercises
+        JPanel leftListPanel = new JPanel(new BorderLayout());
+        leftListPanel.add(foodPanel, BorderLayout.CENTER);
+        leftListPanel.add(exercisePanel, BorderLayout.SOUTH);
 
         // Buttons
-        addLogButton = new JButton("Add Log Entry");
+        addLogButton = new JButton("Log Food/Exercise");
         addFoodButton = new JButton("Add New Food/Recipe");
+        addExerciseButton = new JButton("Add New Exercise");
         setGoalsButton = new JButton("Set Goals");
         changeDateButton = new JButton("Change Date");
+        deleteLogButton = new JButton("Delete Log Entry");
+        editExerciseButton = new JButton("Edit Exercise");
 
         JPanel leftButtonPanel = new JPanel();
         leftButtonPanel.setLayout(new BoxLayout(leftButtonPanel, BoxLayout.Y_AXIS));
-        leftButtonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel topLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topLeftPanel.add(changeDateButton); // new top left button
+        topLeftPanel.add(addFoodButton);
+        topLeftPanel.add(addExerciseButton);
+        topLeftPanel.add(addLogButton);
         leftButtonPanel.add(topLeftPanel);
 
         JPanel logFoodPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        logFoodPanel.add(addLogButton);
-        logFoodPanel.add(addFoodButton);
+        logFoodPanel.add(deleteLogButton);
+        logFoodPanel.add(editExerciseButton);
         leftButtonPanel.add(logFoodPanel);
 
         JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.add(foodPanel, BorderLayout.CENTER);
+        leftPanel.add(leftListPanel, BorderLayout.CENTER);
         leftPanel.add(leftButtonPanel, BorderLayout.SOUTH);
 
         // Stats and Pie Chart Panel
@@ -112,7 +134,6 @@ public class View extends JFrame {
         JPanel statsPanel = new JPanel();
         statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
         statsPanel.setBorder(BorderFactory.createTitledBorder("Daily Stats"));
-
         statsPanel.add(goalLabel);
         statsPanel.add(calorieLabel);
         statsPanel.add(remainingLabel);
@@ -120,57 +141,61 @@ public class View extends JFrame {
         statsPanel.add(carbsLabel);
         statsPanel.add(proteinLabel);
         statsPanel.add(weightLabel);
-        JButton setGoalsCopy = setGoalsButton;
-        setGoalsCopy.setAlignmentX(Component.LEFT_ALIGNMENT);
-        statsPanel.add(Box.createVerticalStrut(10)); // spacing
-        statsPanel.add(setGoalsCopy);
+        statsPanel.add(Box.createVerticalStrut(10));
+        statsPanel.add(setGoalsButton);
 
         // Pie chart setup
         pieDataset = new DefaultPieDataset();
         pieDataset.setValue("Fat", 0);
         pieDataset.setValue("Carbs", 0);
         pieDataset.setValue("Protein", 0);
-
         JFreeChart chart = ChartFactory.createPieChart("Nutrient Distribution", pieDataset, true, true, false);
         pieChartPanel = new ChartPanel(chart);
         pieChartPanel.setPreferredSize(new Dimension(300, 200));
 
-        // Create a subpanel to hold the chart and stats side by side
         JPanel chartAndStatsPanel = new JPanel(new GridLayout(1, 2));
-
-        // Add pie chart (left side)
-        pieChartPanel.setPreferredSize(new Dimension(400, 300));
         chartAndStatsPanel.add(pieChartPanel);
-
-        // Add stats (right side)
-        statsPanel.setPreferredSize(new Dimension(200, 200));
         chartAndStatsPanel.add(statsPanel);
 
-        // Now put the chart+stats above the log panel
+        // Change Date + Delete Log Buttons (side by side)
+        JPanel dateAndDeletePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        dateAndDeletePanel.add(changeDateButton);
+        dateAndDeletePanel.add(deleteLogButton);
+
+        JPanel topRightPanel = new JPanel(new BorderLayout());
+        topRightPanel.add(chartAndStatsPanel, BorderLayout.NORTH);
+        topRightPanel.add(dateAndDeletePanel, BorderLayout.CENTER);
+
+        // Food and Exercise Logs
+        foodLogListModel = new DefaultListModel<>();
+        foodLogList = new JList<>(foodLogListModel);
+        foodLogList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        exerciseLogListModel = new DefaultListModel<>();
+        exerciseLogList = new JList<>(exerciseLogListModel);
+        exerciseLogList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        JPanel foodLogPanel = new JPanel(new BorderLayout());
+        currentDateLabel = new JLabel("Date: " + LocalDate.now());
+        foodLogPanel.add(currentDateLabel, BorderLayout.NORTH);
+        foodLogPanel.add(new JScrollPane(foodLogList), BorderLayout.CENTER);
+
+        JPanel exerciseLogPanel = new JPanel(new BorderLayout());
+        exerciseLogPanel.add(new JLabel("Exercise Logs:"), BorderLayout.NORTH);
+        exerciseLogPanel.add(new JScrollPane(exerciseLogList), BorderLayout.CENTER);
+
+        JPanel logPanel = new JPanel(new GridLayout(2, 1));
+        logPanel.add(foodLogPanel);
+        logPanel.add(exerciseLogPanel);
+
         JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(chartAndStatsPanel, BorderLayout.NORTH);
-        // Create vertical container for log + button
-        JPanel logContainer = new JPanel();
-        logContainer.setLayout(new BoxLayout(logContainer, BoxLayout.Y_AXIS));
+        rightPanel.add(topRightPanel, BorderLayout.NORTH);
+        rightPanel.add(logPanel, BorderLayout.CENTER);
 
-        // Set preferred height so it matches left panel better
-        logScroll.setPreferredSize(new Dimension(400, 300)); // adjust height to match foods
-        logContainer.add(logPanel);
-
-        // Center-align and add some spacing before the button
-        changeDateButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        logContainer.add(Box.createVerticalStrut(8));
-        logContainer.add(changeDateButton);
-
-        rightPanel.add(logContainer, BorderLayout.CENTER);
-
-        // Center layout
         JPanel centerPanel = new JPanel(new GridLayout(1, 2));
-        centerPanel.add(leftPanel); // ← left side (food list + buttons)
-        centerPanel.add(rightPanel); // ← right side (chart + stats + logs)
+        centerPanel.add(leftPanel);
+        centerPanel.add(rightPanel);
 
         add(centerPanel, BorderLayout.CENTER);
-
     }
 
     /**
@@ -266,8 +291,11 @@ public class View extends JFrame {
      *
      * @param content the text to display in the log section
      */
-    public void updateLogList(String content) {
-        logDisplayArea.setText(content);
+    public void updateLogList(String text) {
+        foodLogListModel.clear();
+        for (String line : text.split("\n")) {
+            foodLogListModel.addElement(line);
+        }
     }
 
     /**
@@ -298,39 +326,12 @@ public class View extends JFrame {
     }
 
     /**
-     * Returns the currently selected food from the list.
-     *
-     * @return the selected food's display string, or null if none selected
-     */
-    public String getSelectedFoodName() {
-        return foodList.getSelectedValue();
-    }
-
-    /**
-     * Returns a list of all currently selected foods from the list.
-     *
-     * @return a list of display strings for selected foods
-     */
-    public List<String> getSelectedFoodNames() {
-        return foodList.getSelectedValuesList();
-    }
-
-    /**
      * Shows a message dialog with the given message.
      *
      * @param message the text to display in the dialog
      */
     public void showMessage(String message) {
         JOptionPane.showMessageDialog(this, message);
-    }
-
-    /**
-     * Prompts the user to enter the number of servings for a selected food.
-     *
-     * @return the user's input string or null if canceled
-     */
-    public String promptForServings() {
-        return JOptionPane.showInputDialog(this, "Enter number of servings:");
     }
 
     /**
@@ -457,34 +458,31 @@ public class View extends JFrame {
      * Opens a dialog to let the user enter a new calorie goal and weight.
      * If valid inputs are entered, updates the view with the new values.
      */
-    public void promptAndSetGoals() {
-        JTextField calorieField = new JTextField();
+    public double[] promptAndSetGoals() {
         JTextField weightField = new JTextField();
+        JTextField calorieGoalField = new JTextField();
 
-        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
-        panel.add(new JLabel("Calorie Goal:"));
-        panel.add(calorieField);
-        panel.add(new JLabel("Current Weight (kg):"));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(new JLabel("Enter your weight (kg):"));
         panel.add(weightField);
+        panel.add(Box.createVerticalStrut(10)); // Spacing
+        panel.add(new JLabel("Enter your calorie goal:"));
+        panel.add(calorieGoalField);
 
-        int result = JOptionPane.showConfirmDialog(this, panel, "Set Goals", JOptionPane.OK_CANCEL_OPTION);
-
+        int result = JOptionPane.showConfirmDialog(null, panel, "Set Goals", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             try {
-                int calories = Integer.parseInt(calorieField.getText().trim());
                 double weight = Double.parseDouble(weightField.getText().trim());
-
-                if (calories > 0 && weight > 0) {
-                    setCalorieGoal(calories);
-                    setWeight(weight);
-                    showMessage("Goals updated!");
-                } else {
-                    showMessage("Please enter valid positive numbers.");
-                }
+                double calorieGoal = Double.parseDouble(calorieGoalField.getText().trim());
+                updateWeight(weight);
+                updateCalorieGoal(calorieGoal);
+                return new double[] { weight, calorieGoal };
             } catch (NumberFormatException e) {
-                showMessage("Please enter valid numbers.");
+                showMessage("Invalid input. Please enter valid numbers.");
             }
         }
+        return null; // Return null if canceled or invalid
     }
 
     /**
@@ -611,6 +609,192 @@ public class View extends JFrame {
         }
 
         return recipe;
+    }
+
+    public Exercise promptForExercise() {
+        String name = JOptionPane.showInputDialog("Enter exercise name:");
+        if (name == null || name.trim().isEmpty()) {
+            showMessage("Exercise name cannot be empty.");
+            return null;
+        }
+
+        try {
+            String caloriesStr = JOptionPane.showInputDialog("Enter calories burned per kg per hour:");
+            if (caloriesStr == null || caloriesStr.trim().isEmpty()) {
+                showMessage("Calories per kg per hour cannot be empty.");
+                return null;
+            }
+            double calories = Double.parseDouble(caloriesStr.trim());
+            return new Exercise(name.trim(), calories);
+        } catch (NumberFormatException e) {
+            showMessage("Invalid calories input. Please enter a number.");
+            return null;
+        }
+    }
+
+    public void updateExerciseList(List<Exercise> exercises) {
+        exerciseListModel.clear(); // Assuming you're using a DefaultListModel
+        for (Exercise ex : exercises) {
+            exerciseListModel.addElement(ex.getName() + " — " + ex.getCaloriesPerKgPerHour() + " cal/kg/hr");
+        }
+    }
+
+    public void addExerciseListener(ActionListener listener) {
+        addExerciseButton.addActionListener(listener);
+    }
+
+    public void updateExerciseLogList(String text) {
+        exerciseLogListModel.clear();
+        for (String line : text.split("\n")) {
+            exerciseLogListModel.addElement(line);
+        }
+    }
+
+    public void updateCalorieGoal(double goal) {
+        goalLabel.setText("Calorie Goal: " + goal);
+        remainingLabel.setText("Remaining: " + goal); // This gets updated properly in stats too
+    }
+
+    public void updateStatsPanel(double goal, double consumed, double burned, double net, double difference, double fat,
+            double carbs, double protein) {
+        goalLabel.setText("Calorie Goal: " + goal);
+        calorieLabel.setText("Calories Consumed: " + consumed);
+        fatLabel.setText("Calories Burned (Exercise): " + burned);
+        proteinLabel.setText("Net Calories: " + net);
+        carbsLabel.setText("Goal Difference: " + difference);
+        pieDataset.setValue("Fat", fat); // Use the current fat, carbs, protein values
+        pieDataset.setValue("Carbs", carbs);
+        pieDataset.setValue("Protein", protein);
+
+        // Optional: color feedback for goal difference
+        if (difference < 0) {
+            carbsLabel.setForeground(Color.RED); // Over goal
+        } else {
+            carbsLabel.setForeground(new Color(0, 128, 0)); // Under goal
+        }
+    }
+
+    public void addDeleteLogListener(ActionListener listener) {
+        deleteLogButton.addActionListener(listener);
+    }
+
+    // For Food log deletion
+    public String getSelectedFoodLog() {
+        return foodLogList.getSelectedValue();
+    }
+
+    public String getSelectedExerciseLog() {
+        return exerciseLogList.getSelectedValue();
+    }
+
+    public double promptForWeight() {
+        String input = JOptionPane.showInputDialog("Enter your weight (kg):");
+        return Double.parseDouble(input.trim());
+    }
+
+    public double promptForCalorieGoal() {
+        String input = JOptionPane.showInputDialog("Enter your calorie goal:");
+        return Double.parseDouble(input.trim());
+    }
+
+    public Exercise promptForExerciseCombined() {
+        JTextField nameField = new JTextField();
+        JTextField caloriesField = new JTextField();
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(new JLabel("Enter exercise name:"));
+        panel.add(nameField);
+        panel.add(Box.createVerticalStrut(10)); // Spacing
+        panel.add(new JLabel("Enter calories burned per kg per hour:"));
+        panel.add(caloriesField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Exercise", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                String name = nameField.getText().trim();
+                double calories = Double.parseDouble(caloriesField.getText().trim());
+
+                if (name.isEmpty()) {
+                    showMessage("Exercise name cannot be empty.");
+                    return null;
+                }
+                return new Exercise(name, calories);
+            } catch (NumberFormatException e) {
+                showMessage("Invalid input. Please enter valid numbers.");
+            }
+        }
+        return null; // If canceled or invalid
+    }
+
+    // Dropdown for food selection
+    public Food promptForFoodSelection(List<Food> foods) {
+        Food[] foodArray = foods.toArray(new Food[0]);
+        Food selected = (Food) JOptionPane.showInputDialog(this, "Select a food:", "Food Selection",
+                JOptionPane.PLAIN_MESSAGE, null, foodArray, foodArray[0]);
+        return selected;
+    }
+
+    // Dropdown for exercise selection
+    public Exercise promptForExerciseSelection(List<Exercise> exercises) {
+        Exercise[] exerciseArray = exercises.toArray(new Exercise[0]);
+        Exercise selected = (Exercise) JOptionPane.showInputDialog(this, "Select an exercise:", "Exercise Selection",
+                JOptionPane.PLAIN_MESSAGE, null, exerciseArray, exerciseArray[0]);
+        return selected;
+    }
+
+    public Object[] promptForFoodAndServings(List<Food> foods) {
+        JComboBox<Food> foodDropdown = new JComboBox<>(foods.toArray(new Food[0]));
+        JTextField servingsField = new JTextField();
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(new JLabel("Select food:"));
+        panel.add(foodDropdown);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(new JLabel("Enter servings:"));
+        panel.add(servingsField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Log Food", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                Food selectedFood = (Food) foodDropdown.getSelectedItem();
+                double servings = Double.parseDouble(servingsField.getText().trim());
+                return new Object[] { selectedFood, servings };
+            } catch (NumberFormatException e) {
+                showMessage("Invalid servings input.");
+            }
+        }
+        return null; // If canceled or invalid
+    }
+
+    public Object[] promptForExerciseAndMinutes(List<Exercise> exercises) {
+        JComboBox<Exercise> exerciseDropdown = new JComboBox<>(exercises.toArray(new Exercise[0]));
+        JTextField minutesField = new JTextField();
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.add(new JLabel("Select exercise:"));
+        panel.add(exerciseDropdown);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(new JLabel("Enter minutes:"));
+        panel.add(minutesField);
+
+        int result = JOptionPane.showConfirmDialog(this, panel, "Log Exercise", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                Exercise selectedExercise = (Exercise) exerciseDropdown.getSelectedItem();
+                double minutes = Double.parseDouble(minutesField.getText().trim());
+                return new Object[] { selectedExercise, minutes };
+            } catch (NumberFormatException e) {
+                showMessage("Invalid minutes input.");
+            }
+        }
+        return null;
+    }
+
+    public JButton getEditExerciseButton() {
+        return editExerciseButton;
     }
 
 }
