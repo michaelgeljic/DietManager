@@ -277,6 +277,13 @@ public class View extends JFrame {
         }
     }
 
+    /**
+     * Formats the nutritional details of a given food into a readable string.
+     *
+     * @param food the Food object containing nutritional information
+     * @return a formatted string in the format:
+     *         "FoodName — X.X cal | X.Xg fat | X.Xg carbs | X.Xg protein"
+     */
     private String formatFoodDetails(Food food) {
         return String.format("%s — %.1f cal | %.1fg fat | %.1fg carbs | %.1fg protein",
                 food.getName(),
@@ -611,6 +618,15 @@ public class View extends JFrame {
         return recipe;
     }
 
+    /**
+     * Prompts the user to enter details for a new exercise using input dialogs.
+     * Collects the exercise name and calories burned per kilogram per hour.
+     * If the input is invalid (empty or non-numeric for calories), shows an error
+     * message and returns null.
+     *
+     * @return a new Exercise object with the entered name and calories, or null if
+     *         input is invalid or canceled
+     */
     public Exercise promptForExercise() {
         String name = JOptionPane.showInputDialog("Enter exercise name:");
         if (name == null || name.trim().isEmpty()) {
@@ -632,6 +648,14 @@ public class View extends JFrame {
         }
     }
 
+    /**
+     * Updates the exercise list displayed in the view with the given list of
+     * exercises.
+     * Each exercise is shown with its name and calories burned per kilogram per
+     * hour.
+     *
+     * @param exercises the list of Exercise objects to display
+     */
     public void updateExerciseList(List<Exercise> exercises) {
         exerciseListModel.clear(); // Assuming you're using a DefaultListModel
         for (Exercise ex : exercises) {
@@ -639,10 +663,23 @@ public class View extends JFrame {
         }
     }
 
+    /**
+     * Adds an ActionListener to the add exercise button.
+     * The listener will handle events triggered when the button is clicked.
+     *
+     * @param listener the ActionListener to add
+     */
     public void addExerciseListener(ActionListener listener) {
         addExerciseButton.addActionListener(listener);
     }
 
+    /**
+     * Updates the exercise log list displayed in the view.
+     * Splits the provided text by lines and adds each line as an entry.
+     *
+     * @param text the exercise log entries as a single string, separated by
+     *             newlines
+     */
     public void updateExerciseLogList(String text) {
         exerciseLogListModel.clear();
         for (String line : text.split("\n")) {
@@ -650,11 +687,33 @@ public class View extends JFrame {
         }
     }
 
+    /**
+     * Updates the displayed calorie goal and remaining calories labels in the view.
+     *
+     * @param goal the current calorie goal to display
+     */
     public void updateCalorieGoal(double goal) {
         goalLabel.setText("Calorie Goal: " + goal);
         remainingLabel.setText("Remaining: " + goal); // This gets updated properly in stats too
     }
 
+    /**
+     * Updates the statistics panel in the view with the provided values.
+     * Displays calorie goal, calories consumed, calories burned, net calories, goal
+     * difference,
+     * and updates the nutrient distribution pie chart (fat, carbs, protein).
+     * Also changes the goal difference label color based on whether the goal is
+     * exceeded.
+     *
+     * @param goal       the calorie goal
+     * @param consumed   the calories consumed
+     * @param burned     the calories burned through exercise
+     * @param net        the net calories (consumed - burned)
+     * @param difference the difference between the calorie goal and net calories
+     * @param fat        the grams of fat consumed
+     * @param carbs      the grams of carbs consumed
+     * @param protein    the grams of protein consumed
+     */
     public void updateStatsPanel(double goal, double consumed, double burned, double net, double difference, double fat,
             double carbs, double protein) {
         goalLabel.setText("Calorie Goal: " + goal);
@@ -674,29 +733,67 @@ public class View extends JFrame {
         }
     }
 
+    /**
+     * Adds an ActionListener to the delete log button.
+     * The listener handles events when the button is clicked.
+     *
+     * @param listener the ActionListener to add
+     */
     public void addDeleteLogListener(ActionListener listener) {
         deleteLogButton.addActionListener(listener);
     }
 
-    // For Food log deletion
+    /**
+     * Returns the currently selected food log entry from the food log list.
+     *
+     * @return the selected food log entry as a string, or null if none selected
+     */
     public String getSelectedFoodLog() {
         return foodLogList.getSelectedValue();
     }
 
+    /**
+     * Returns the currently selected exercise log entry from the exercise log list.
+     *
+     * @return the selected exercise log entry as a string, or null if none selected
+     */
     public String getSelectedExerciseLog() {
         return exerciseLogList.getSelectedValue();
     }
 
+    /**
+     * Prompts the user to enter their weight in kilograms.
+     * Shows an input dialog and parses the entered value.
+     *
+     * @return the entered weight as a double
+     * @throws NumberFormatException if the input is invalid
+     */
     public double promptForWeight() {
         String input = JOptionPane.showInputDialog("Enter your weight (kg):");
         return Double.parseDouble(input.trim());
     }
 
+    /**
+     * Prompts the user to enter their calorie goal.
+     * Shows an input dialog and parses the entered value.
+     *
+     * @return the entered calorie goal as a double
+     * @throws NumberFormatException if the input is invalid
+     */
     public double promptForCalorieGoal() {
         String input = JOptionPane.showInputDialog("Enter your calorie goal:");
         return Double.parseDouble(input.trim());
     }
 
+    /**
+     * Prompts the user to enter details for a new exercise (name and calories
+     * burned per kg per hour)
+     * using a combined input dialog. Validates the input and returns an Exercise
+     * object if valid.
+     *
+     * @return a new Exercise object with the entered details, or null if canceled
+     *         or input is invalid
+     */
     public Exercise promptForExerciseCombined() {
         JTextField nameField = new JTextField();
         JTextField caloriesField = new JTextField();
@@ -727,7 +824,13 @@ public class View extends JFrame {
         return null; // If canceled or invalid
     }
 
-    // Dropdown for food selection
+    /**
+     * Prompts the user to select a food item from the provided list using a
+     * dropdown dialog.
+     *
+     * @param foods the list of Food objects to choose from
+     * @return the selected Food object, or null if canceled
+     */
     public Food promptForFoodSelection(List<Food> foods) {
         Food[] foodArray = foods.toArray(new Food[0]);
         Food selected = (Food) JOptionPane.showInputDialog(this, "Select a food:", "Food Selection",
@@ -735,7 +838,13 @@ public class View extends JFrame {
         return selected;
     }
 
-    // Dropdown for exercise selection
+    /**
+     * Prompts the user to select an exercise from the provided list using a
+     * dropdown dialog.
+     *
+     * @param exercises the list of Exercise objects to choose from
+     * @return the selected Exercise object, or null if canceled
+     */
     public Exercise promptForExerciseSelection(List<Exercise> exercises) {
         Exercise[] exerciseArray = exercises.toArray(new Exercise[0]);
         Exercise selected = (Exercise) JOptionPane.showInputDialog(this, "Select an exercise:", "Exercise Selection",
@@ -743,6 +852,15 @@ public class View extends JFrame {
         return selected;
     }
 
+    /**
+     * Prompts the user to select a food item and enter the number of servings.
+     * Combines both inputs in a single dialog. Validates servings input.
+     *
+     * @param foods the list of Food objects to choose from
+     * @return an Object array containing the selected Food and servings as a
+     *         Double,
+     *         or null if canceled or input is invalid
+     */
     public Object[] promptForFoodAndServings(List<Food> foods) {
         JComboBox<Food> foodDropdown = new JComboBox<>(foods.toArray(new Food[0]));
         JTextField servingsField = new JTextField();
@@ -768,6 +886,15 @@ public class View extends JFrame {
         return null; // If canceled or invalid
     }
 
+    /**
+     * Prompts the user to select an exercise and enter the number of minutes.
+     * Combines both inputs in a single dialog. Validates minutes input.
+     *
+     * @param exercises the list of Exercise objects to choose from
+     * @return an Object array containing the selected Exercise and minutes as a
+     *         Double,
+     *         or null if canceled or input is invalid
+     */
     public Object[] promptForExerciseAndMinutes(List<Exercise> exercises) {
         JComboBox<Exercise> exerciseDropdown = new JComboBox<>(exercises.toArray(new Exercise[0]));
         JTextField minutesField = new JTextField();
@@ -793,6 +920,12 @@ public class View extends JFrame {
         return null;
     }
 
+    /**
+     * Returns the edit exercise button from the view.
+     * Allows external classes to add ActionListeners to it.
+     *
+     * @return the edit exercise JButton
+     */
     public JButton getEditExerciseButton() {
         return editExerciseButton;
     }

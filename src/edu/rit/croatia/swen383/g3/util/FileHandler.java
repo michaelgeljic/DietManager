@@ -5,8 +5,21 @@ import edu.rit.croatia.swen383.g3.model.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
-
+/**
+ * The FileHandler class handles reading and writing data for the Diet Manager application.
+ * It supports exercises, foods (basic and recipes), logs (food entries, exercise entries, weight, and calorie goals).
+ * Data is stored in CSV files for persistence.
+ */
 public class FileHandler {
+    /**
+     * Reads exercises from a CSV file and returns a list of Exercise objects.
+     * Only lines starting with "e," are processed.
+     *
+     * CSV format: e,exerciseName,caloriesPerKgPerHour
+     *
+     * @param filename the path to the exercise CSV file
+     * @return a list of Exercise objects
+     */
 
     // Reading exercises from exercise.csv
     public List<Exercise> readExercises(String filename) {
@@ -29,7 +42,14 @@ public class FileHandler {
         return exercises;
     }
 
-    // Writing exercises to exercise.csv
+    /**
+     * Writes a list of Exercise objects to a CSV file.
+     *
+     * CSV format: e,exerciseName,caloriesPerKgPerHour
+     *
+     * @param exercises the list of exercises to write
+     * @param filename  the path to the exercise CSV file
+     */
     public void writeExercises(List<Exercise> exercises, String filename) {
         try (PrintWriter writer = new PrintWriter(filename)) {
             for (Exercise e : exercises) {
@@ -40,7 +60,21 @@ public class FileHandler {
         }
     }
 
-    // Reading logs (foods, exercises, weight, calorie goal)
+   /**
+     * Reads logs from a CSV file and populates the Logs object with food logs, exercise logs, weight, and calorie goals.
+     * It matches food and exercise names to existing objects from the Foods and Exercises lists.
+     *
+     * CSV formats:
+     * - Food log:       yyyy,mm,dd,f,foodName,servings
+     * - Exercise log:   yyyy,mm,dd,e,exerciseName,minutes
+     * - Weight log:     yyyy,mm,dd,w,weight
+     * - Calorie goal:   yyyy,mm,dd,c,calorieGoal
+     *
+     * @param filename  the path to the log CSV file
+     * @param foods     the list of available Food objects for matching food logs
+     * @param exercises the Exercises object containing available Exercise objects
+     * @param logs      the Logs object to populate
+     */
     public void readLogs(String filename, List<Food> foods, Exercises exercises, Logs logs) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
@@ -93,7 +127,18 @@ public class FileHandler {
         }
     }
 
-    // Writing logs (foods, exercises, weight, calorie goal)
+    /**
+     * Writes all logs (food logs, exercise logs, weight, and calorie goals) from the Logs object to a CSV file.
+     *
+     * CSV formats:
+     * - Food log:       yyyy,mm,dd,f,foodName,servings
+     * - Exercise log:   yyyy,mm,dd,e,exerciseName,minutes
+     * - Weight log:     yyyy,mm,dd,w,weight
+     * - Calorie goal:   yyyy,mm,dd,c,calorieGoal
+     *
+     * @param filename the path to the log CSV file
+     * @param logs     the Logs object containing log entries to write
+     */
     public void writeLogs(String filename, Logs logs) {
         try (PrintWriter writer = new PrintWriter(filename)) {
             // Write food logs
