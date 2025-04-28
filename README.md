@@ -11,17 +11,17 @@
 
 # DietManager800G3 A3
 
-- [ ] When you create a new recipe, the object needs to be stored in the model (in RAM). Make sure that you are not bypassing the model while working with the data
-- [ ] The log.csv file should not be empty.
-- [ ] On Change, the model should be saved in the files.
-- [ ] CD: Under construction
-- [ ] SD: Under contruction 
+- [x] When you create a new recipe, the object needs to be stored in the model (in RAM). Make sure that you are not bypassing the model while working with the data
+- [x] The log.csv file should not be empty.
+- [x] On Change, the model should be saved in the files.
+- [x] CD: Under construction
+- [x] SD: Under contruction 
 
 # DietManager800G3 V2 (W13C2 Check)
-- [ ] All group members are missing except Felicio
-- [ ] SRC: Not implemented. 
-- [ ] CD: Is in place, but the source code is missing so there might be some changes in the future.
-- [ ] SD: No SD
+- [x] All group members are missing except Felicio
+- [x] SRC: Not implemented. 
+- [x] CD: Is in place, but the source code is missing so there might be some changes in the future.
+- [x] SD: No SD
 
 This is a quick but important status update on your project progress. As of today, there have been no commits to your GitLab repository since April 9, which is a serious concern. You're currently not following the GitLab flow, which is essential not just for version control, but also for transparency and collaboration within the team and with your instructor. 
 That’s not acceptable at this stage of the project. Everyone needs to start committing their changes, pushing updates regularly, and using merge requests. Let’s get back on track immediately. 
